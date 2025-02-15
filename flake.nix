@@ -32,16 +32,10 @@
           mariadb-client
         ];
       };
+      packages = rec {
+        wikibase = (import ./packages/wikibase) { inherit pkgs; };
+        default = wikibase;
+      };
     };
   };
 }
-# outputs = { self, nixpkgs }: let
-#   system = "x86_64-linux";
-#   pkgs = (import nixpkgs) {
-#     inherit system;
-#   };
-#
-# in
-# {
-#   defaultPackage.x86_64-linux = import ./packages/wikibase { inherit pkgs; };
-# };
