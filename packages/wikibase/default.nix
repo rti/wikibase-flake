@@ -1,20 +1,6 @@
 { pkgs, ... }:
 
 let 
-  # mediawiki = pkgs.stdenvNoCC.mkDerivation {
-  #   name = "mediawiki";
-  #
-  #   src = pkgs.fetchzip {
-  #     url = "https://releases.wikimedia.org/mediawiki/1.42/mediawiki-1.42.5.tar.gz";
-  #     sha256 = "sha256-aimnN1T1i8a22mvaUOtpelblfTdUpNloEotPbwYoRzQ=";
-  #   };
-  #
-  #   installPhase = ''
-  #     mkdir -p $out
-  #     cp -r * $out/
-  #     # ls -l $out/
-  #   '';
-  # };
 
   mediawiki-src = pkgs.fetchzip {
     url = "https://releases.wikimedia.org/mediawiki/1.42/mediawiki-1.42.5.tar.gz";
@@ -43,6 +29,9 @@ let
   mediawiki-with-wikibase = pkgs.stdenvNoCC.mkDerivation {
     name = "wikibase";
     src = mediawiki-src;
+
+    nativeBuildInputs = [wikibase-src mediawiki-src];
+
     installPhase = ''
       cp -r ${wikibase-src} extensions/Wikibase
 
@@ -50,11 +39,15 @@ let
       rm -rf vendor
       cp composer.local.json-sample composer.local.json
 
-      # TODO: what to do with composer lock?
-      rm -rf composer.lock
+      find . -name composer.lock | xargs rm -f
+      # rm -f composer.lock
+      # cp ${./composer.lock} .
 
       mkdir $out
       cp -r * $out
+
+      find $out -name composer.lock 
+      exit
     '';
   };
 
@@ -62,32 +55,6 @@ let
 in
   ((import ./generated-composer2nix/default.nix) { inherit pkgs; noDev = true; }).overrideAttrs {
     src = mediawiki-with-wikibase;
-    unpackPhase = ''
-      cp -r $src/* .
-      ls -l
-      ls -l extensions/Wikibase
-      # cp ${./generated-composer2nix/composer.lock} .
-      # ls -l
-      exit 1
-    '';
-  }
 
-  # pkgs.stdenvNoCC.mkDerivation {
-  #   name = "wikibase";
-  #
-  #   src = ((import ./generated-composer2nix/default.nix) { inherit pkgs; }).overrideAttrs {
-  #     src = mediawiki-with-wikibase;
-  #     unpackPhase = ''
-  #       cp -r $src/* .
-  #       cp ${./generated-composer2nix/composer.lock} .
-  #       ls -l
-  #       exit 1
-  #     '';
-  #   };
-  #
-  #   # installPhase = ''
-  #   # '';
-  # }
-  # (import ./generated-composer2nix).overrideAttr {inherit pkgs;} {
-  #   src = mediawiki-with-wikibase;
-  # }
+    nativeBuildInputs = [ mediawiki-with-wikibase wikibase-src mediawiki-src ];
+  }
