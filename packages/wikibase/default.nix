@@ -8,7 +8,7 @@ let
   };
 
   wikibase-src = pkgs.stdenvNoCC.mkDerivation {
-    name = "wikibase";
+    name = "wikibase-src";
     src = pkgs.fetchFromGitHub {
       owner = "wikimedia";
       repo = "mediawiki-extensions-Wikibase";
@@ -27,7 +27,7 @@ let
   };
 
   mediawiki-with-wikibase-src = pkgs.stdenvNoCC.mkDerivation {
-    name = "wikibase";
+    name = "mediawiki-with-wikibase-src";
     src = mediawiki-src;
 
     installPhase = ''
@@ -37,6 +37,9 @@ let
       cp composer.local.json-sample composer.local.json
       rm -rf vendor
       cp -v ${./composer.lock} composer.lock
+
+      # mediawiki sript path
+      ln -s . w
 
       mkdir $out
       cp -r * $out
