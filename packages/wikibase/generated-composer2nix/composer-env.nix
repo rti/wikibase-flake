@@ -125,7 +125,7 @@ let
               ${if symlinkDependencies then
                 ''ln -s "${dependency.src}" "$vendorDir/$(basename "${dependencyName}")"''
                 else
-                ''cp -a "${dependency.src}" "$vendorDir/$(basename "${dependencyName}")"''
+                ''cp -av "${dependency.src}" "$vendorDir/$(basename "${dependencyName}")"''
               }
             '' else ''
               namespaceDir="${dependencyName}/$(dirname "${dependency.targetDir}")"
@@ -133,7 +133,7 @@ let
               ${if symlinkDependencies then
                 ''ln -s "${dependency.src}" "$namespaceDir/$(basename "${dependency.targetDir}")"''
               else
-                ''cp -a "${dependency.src}" "$namespaceDir/$(basename "${dependency.targetDir}")"''
+                ''cp -av "${dependency.src}" "$namespaceDir/$(basename "${dependency.targetDir}")"''
               }
             ''}
           '') (builtins.attrNames dependencies);
@@ -146,15 +146,13 @@ let
       inherit unpackPhase buildPhase;
 
       installPhase = ''
-        set -x
-
         ${if executable then ''
           mkdir -p $out/share/php
-          cp -a $src $out/share/php/$name
+          cp -av $src $out/share/php/$name
           chmod -R u+w $out/share/php/$name
           cd $out/share/php/$name
         '' else ''
-          cp -a $src $out
+          cp -av $src $out
           chmod -R u+w $out
           cd $out
         ''}

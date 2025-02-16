@@ -26,35 +26,28 @@ let
     '';
   };
 
-  mediawiki-with-wikibase = pkgs.stdenvNoCC.mkDerivation {
+  mediawiki-with-wikibase-src = pkgs.stdenvNoCC.mkDerivation {
     name = "wikibase";
     src = mediawiki-src;
-
-    nativeBuildInputs = [wikibase-src mediawiki-src];
 
     installPhase = ''
       cp -r ${wikibase-src} extensions/Wikibase
 
-      # prepare new composer run with wikibase extension
-      rm -rf vendor
+      # prepare composer run with wikibase extension
       cp composer.local.json-sample composer.local.json
-
-      find . -name composer.lock | xargs rm -f
-      # rm -f composer.lock
-      # cp ${./composer.lock} .
+      rm -rf vendor
+      cp -v ${./composer.lock} composer.lock
 
       mkdir $out
       cp -r * $out
-
-      find $out -name composer.lock 
-      exit
     '';
   };
 
 
 in
-  ((import ./generated-composer2nix/default.nix) { inherit pkgs; noDev = true; }).overrideAttrs {
-    src = mediawiki-with-wikibase;
+  ((import ./generated-composer2nix/default.nix) { 
+      inherit pkgs; noDev = true; }).overrideAttrs {
 
-    nativeBuildInputs = [ mediawiki-with-wikibase wikibase-src mediawiki-src ];
+    name = "wikibase";
+    src = mediawiki-with-wikibase-src;
   }
