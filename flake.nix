@@ -61,6 +61,7 @@ require_once "\$IP/extensions/Wikibase/client/ExampleSettings.php";
 EOF
 
               php ${wikibase}/maintenance/run.php update.php \
+                --quick \
                 --conf "$WORKDIR"/LocalSettings.php
 
               MW_CONFIG_FILE="''${WORKDIR}/LocalSettings.php" \
