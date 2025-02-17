@@ -39,8 +39,6 @@
             name = "php";
             runtimeInputs = [ pkgs.php82 ];
             text = ''
-              set -x
-
               DATADIR="''${PWD}/data/php"
               mkdir -p "$DATADIR"
 
@@ -75,27 +73,40 @@ EOF
           };
           depends_on."mysql".condition = "process_healthy";
         };
+
         settings.processes.wdqs = {
           command = pkgs.writeShellApplication {
             name = "wdqs";
-            runtimeInputs = [];
             text = ''
-              set -x
-
-              DATADIR="''${PWD}/data/php"
+              DATADIR="''${PWD}/data/wdqs"
               mkdir -p "$DATADIR"/log
 
-              LOG_DIR="''${DATADIR}/log" ${wdqs}/runBlazegraph.sh
+              EXTRA_JVM_OPTS=-Dcom.bigdata.journal.AbstractJournal.file="''${DATADIR}/data.jnl" \
+                LOG_DIR="''${DATADIR}/log" ${wdqs}/runBlazegraph.sh
             '';
           };
-          depends_on."mysql".condition = "process_healthy";
+        };
+
+        settings.processes.wdqs-updater = {
+          command = pkgs.writeShellApplication {
+            name = "wdqs-updater";
+            runtimeInputs = [];
+            text = ''
+              ${wdqs}/runUpdate.sh -h http://localhost:9999 -- \
+                --wikibaseUrl "http://localhost:8081" \
+                --conceptUri "http://localhost" \
+                --entityNamespaces "120,122"
+            '';
+          };
         };
       };
+
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           mariadb-client
         ];
       };
+
       packages = {
         inherit wikibase;
         inherit wdqs;

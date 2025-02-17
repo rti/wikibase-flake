@@ -12,15 +12,13 @@
     mkdir $out
     cp -r $src/* $out
 
-    # makeWrapper ${pkgs.jre}/bin/java $out/bin/foo \
-    #       --add-flags "-cp $out/share/java/foo.jar org.foo.Main"
     wrapProgram $out/runBlazegraph.sh \
         --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.jdk ]} \
-        --prefix LOG_CONFIG : ${./logback.xml} \
-        --prefix CONFIG_FILE : ${./RWStore.properties}
-  '';
+        --prefix LOG_CONFIG : ${./logback.xml}
 
-        # --chdir /home/rti/tmp/wdqs-today/ \
-        # --prefix DIR : /home/rti/tmp/wdqs-today/ \
+    # TODO: we use a different old jdk here. is there some cleanup possible
+    wrapProgram $out/runUpdate.sh \
+        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.jdk8 ]}
+  '';
 
 }
