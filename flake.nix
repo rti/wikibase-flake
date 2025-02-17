@@ -50,7 +50,7 @@
                 --dbpass wiki \
                 --confpath "$DATADIR" \
                 --scriptpath "/w" \
-                --extensions "AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor" \
+                --extensions "AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor,cldr,Elastica,CirrusSearch,WikibaseCirrusSearch" \
                 my_wiki admin
 
                 cat <<EOF >> "$DATADIR"/LocalSettings.php
@@ -61,11 +61,19 @@ require_once "\$IP/extensions/Wikibase/repo/ExampleSettings.php";
 # Wikibase Client
 wfLoadExtension( 'WikibaseClient', "\$IP/extensions/Wikibase/extension-client.json" );
 require_once "\$IP/extensions/Wikibase/client/ExampleSettings.php";
+
+# use jobs on request, we not have a job runner
+\$wgJobRunRate = 1;
+
 EOF
 
               php ${wikibase}/maintenance/run.php update.php \
                 --quick \
                 --conf "$DATADIR"/LocalSettings.php
+
+              php ${wikibase}/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
+              php ${wikibase}/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipParse
+              php ${wikibase}/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip
 
               MW_CONFIG_FILE="''${DATADIR}/LocalSettings.php" \
                 php -S 127.0.0.1:8081 -t ${wikibase}

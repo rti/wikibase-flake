@@ -26,11 +26,46 @@ let
     '';
   };
 
+  cldr-src = pkgs.fetchFromGitHub {
+    owner = "wikimedia";
+    repo = "mediawiki-extensions-cldr";
+    rev = "98377ac95ca83d895c156e5b5ddcfdca1173a811"; # on REL1_42
+    hash = "sha256-GAfgm8BANZ7oY0mFxihFhC+pJV1wFX6LBLjH+hEvbQE=";
+  };
+
+  cirrussearch-src = pkgs.fetchFromGitHub {
+    owner = "wikimedia";
+    repo = "mediawiki-extensions-CirrusSearch";
+    # TODO
+    rev = "eabd6c0ee6f06304217a0eaa1ddfbf88e4a522c2"; # on REL1_42
+    hash = "sha256-qRidTJjnwR7+JzbPDlqAP8dtts/+KkfT84Lxw/V/B7s=";
+  };
+
+  elastica-src = pkgs.fetchFromGitHub {
+    owner = "wikimedia";
+    repo = "mediawiki-extensions-Elastica";
+    # TODO
+    rev = "78f2f84c29b647a6694e2e48f275557030abfe13"; # on REL1_42
+    hash = "sha256-yAy+jLPAn117KciSK4L53r6mDeARQjf6dX65F74GgcE=";
+  };
+
+  wikibasecirrussearch-src = pkgs.fetchFromGitHub {
+    owner = "wikimedia";
+    repo = "mediawiki-extensions-WikibaseCirrusSearch";
+    # TODO
+    rev = "10d4055cdf4b12df7dc88d968f966711ee4b097d"; # on REL1_42
+    hash = "sha256-qRidTJjnwR7+JzbPDlqAP8dtts/+KkfT84Lxw/V/B7s=";
+  };
+
   mediawiki-with-wikibase-src = pkgs.stdenvNoCC.mkDerivation {
     name = "mediawiki-with-wikibase-src";
     src = mediawiki-src;
 
     installPhase = ''
+      cp -r ${cldr-src} extensions/cldr
+      cp -r ${elastica-src} extensions/Elastica
+      cp -r ${cirrussearch-src} extensions/CirrusSearch
+      cp -r ${wikibasecirrussearch-src} extensions/WikibaseCirrusSearch
       cp -r ${wikibase-src} extensions/Wikibase
 
       # prepare composer run with wikibase extension
