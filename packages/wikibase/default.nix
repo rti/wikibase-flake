@@ -38,7 +38,7 @@ let
     repo = "mediawiki-extensions-CirrusSearch";
     # TODO
     rev = "eabd6c0ee6f06304217a0eaa1ddfbf88e4a522c2"; # on REL1_42
-    hash = "sha256-qRidTJjnwR7+JzbPDlqAP8dtts/+KkfT84Lxw/V/B7s=";
+    hash = "sha256-mD15TolEvm8b74R9xEZpM1HMvzpOYLBIULCsneyNpTs=";
   };
 
   elastica-src = pkgs.fetchFromGitHub {
@@ -66,6 +66,7 @@ let
       cp -r ${elastica-src} extensions/Elastica
       cp -r ${cirrussearch-src} extensions/CirrusSearch
       cp -r ${wikibasecirrussearch-src} extensions/WikibaseCirrusSearch
+
       cp -r ${wikibase-src} extensions/Wikibase
 
       # prepare composer run with wikibase extension

@@ -142,6 +142,16 @@ let
         };
       };
     };
+    "elasticsearch/elasticsearch" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "elasticsearch-elasticsearch-f1b8918f411b837ce5f6325e829a73518fd50367";
+        src = fetchurl {
+          url = "https://api.github.com/repos/elastic/elasticsearch-php/zipball/f1b8918f411b837ce5f6325e829a73518fd50367";
+          sha256 = "18hmnipscl418g42fgy7s5ymwb4zqaz7dm5nn5zi00fq2fg6950l";
+        };
+      };
+    };
     "endroid/qr-code" = {
       targetDir = "";
       src = composerEnv.buildZipPackage {
@@ -149,6 +159,26 @@ let
         src = fetchurl {
           url = "https://api.github.com/repos/endroid/qr-code/zipball/a75c913b0e4d6ad275e49a2c1de1cacffc6c2184";
           sha256 = "0gvn08vqy273k41hwdm8nygbkbahcwasbwgd81w03q8r3f0fjnx1";
+        };
+      };
+    };
+    "ezimuel/guzzlestreams" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "ezimuel-guzzlestreams-b4b5a025dfee70d6cd34c780e07330eb93d5b997";
+        src = fetchurl {
+          url = "https://api.github.com/repos/ezimuel/guzzlestreams/zipball/b4b5a025dfee70d6cd34c780e07330eb93d5b997";
+          sha256 = "09d5j1pj985qm8kvxy551fi53gs6wxbzb1zlbk7x3pp05rxpbsq3";
+        };
+      };
+    };
+    "ezimuel/ringphp" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "ezimuel-ringphp-648a9c3c8b5f2591a317d31aa7a18a784011b00d";
+        src = fetchurl {
+          url = "https://api.github.com/repos/ezimuel/ringphp/zipball/648a9c3c8b5f2591a317d31aa7a18a784011b00d";
+          sha256 = "0kbnj8absl7grhfaqnhg68pphn82l23shs30127zz6cckcr74y9x";
         };
       };
     };
@@ -229,6 +259,16 @@ let
         src = fetchurl {
           url = "https://api.github.com/repos/Seldaek/monolog/zipball/437cb3628f4cf6042cc10ae97fc2b8472e48ca1f";
           sha256 = "02xaa057fj2bjf6g6zx80rb6ikcgn601ns50ml51b8yp48pjdla3";
+        };
+      };
+    };
+    "nyholm/dsn" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "nyholm-dsn-9445621b426bac8c0ca161db8cd700da00a4e618";
+        src = fetchurl {
+          url = "https://api.github.com/repos/Nyholm/dsn/zipball/9445621b426bac8c0ca161db8cd700da00a4e618";
+          sha256 = "13bvwxanafjbic93xfly4y31pyz40lym7n3vb1mr1cwl43shrjzm";
         };
       };
     };
@@ -402,6 +442,26 @@ let
         };
       };
     };
+    "react/promise" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "react-promise-1a8460931ea36dc5c76838fec5734d55c88c6831";
+        src = fetchurl {
+          url = "https://api.github.com/repos/reactphp/promise/zipball/1a8460931ea36dc5c76838fec5734d55c88c6831";
+          sha256 = "0vv5xjadcz6pk7vynvsw8r6x7w7jk7n94mrncw4ilwllys6yiaw1";
+        };
+      };
+    };
+    "ruflin/elastica" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "ruflin-elastica-7c61a630c3d456b00a5610960ae3a9bd29987469";
+        src = fetchurl {
+          url = "https://api.github.com/repos/ruflin/Elastica/zipball/7c61a630c3d456b00a5610960ae3a9bd29987469";
+          sha256 = "1wjrzkngd58xa096w81sm8y6sziaai930s7r19h4n0vz9pivvds4";
+        };
+      };
+    };
     "serialization/serialization" = {
       targetDir = "";
       src = composerEnv.buildZipPackage {
@@ -429,6 +489,16 @@ let
         src = fetchurl {
           url = "https://api.github.com/repos/symfony/deprecation-contracts/zipball/74c71c939a79f7d5bf3c1ce9f5ea37ba0114c6f6";
           sha256 = "0jr67zcxmgq26xi9lrw3pg33fvchf27qg3liicm3r1k36hg4ymwf";
+        };
+      };
+    };
+    "symfony/polyfill-php73" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "symfony-polyfill-php73-0f68c03565dcaaf25a890667542e8bd75fe7e5bb";
+        src = fetchurl {
+          url = "https://api.github.com/repos/symfony/polyfill-php73/zipball/0f68c03565dcaaf25a890667542e8bd75fe7e5bb";
+          sha256 = "1dxg0xfikmfk0jzspd7h9ap0kzkgkbb0sv3q48mgdkqnc8gz58wy";
         };
       };
     };
@@ -622,6 +692,16 @@ let
         };
       };
     };
+    "wikimedia/lucene-explain-parser" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "wikimedia-lucene-explain-parser-82a90019468290a6009a9f61010bd0ffd7e8fc10";
+        src = fetchurl {
+          url = "https://api.github.com/repos/wikimedia/lucene-explain-parser/zipball/82a90019468290a6009a9f61010bd0ffd7e8fc10";
+          sha256 = "1jf8amd5fb4mqi1cv0pjlbgmvs8a1njnx1vpympk8sqx4hhi4lnh";
+        };
+      };
+    };
     "wikimedia/minify" = {
       targetDir = "";
       src = composerEnv.buildZipPackage {
@@ -749,6 +829,16 @@ let
         src = fetchurl {
           url = "https://api.github.com/repos/wikimedia/mediawiki-libs-Shellbox/zipball/a3789ef67a3d07ee1dafed0b2001b6331e5ee5e0";
           sha256 = "0akvwmw8m7723f60gs0gkqcl51f3jlxanirdz3dd4gp0q001fpqq";
+        };
+      };
+    };
+    "wikimedia/textcat" = {
+      targetDir = "";
+      src = composerEnv.buildZipPackage {
+        name = "wikimedia-textcat-dfdfb1c41bb016814a9d4da3aa68b62437b54a82";
+        src = fetchurl {
+          url = "https://api.github.com/repos/wikimedia/textcat/zipball/dfdfb1c41bb016814a9d4da3aa68b62437b54a82";
+          sha256 = "0sqrgz1z32dc2ci1s01fvsq9jvkjip84xhxginw5r24rxn2hgndm";
         };
       };
     };

@@ -13,6 +13,7 @@
     let
       wikibase = (import ./packages/wikibase) { inherit pkgs; };
       wdqs = (import ./packages/wdqs) { inherit pkgs; };
+      elasticsearch = (import ./packages/elasticsearch) { inherit pkgs; };
 
     in
     {
@@ -50,7 +51,7 @@
                 --dbpass wiki \
                 --confpath "$DATADIR" \
                 --scriptpath "/w" \
-                --extensions "AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor,cldr,Elastica,CirrusSearch,WikibaseCirrusSearch" \
+                --extensions "AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor,cldr" \
                 my_wiki admin
 
                 cat <<EOF >> "$DATADIR"/LocalSettings.php
@@ -65,21 +66,46 @@ require_once "\$IP/extensions/Wikibase/client/ExampleSettings.php";
 # use jobs on request, we not have a job runner
 \$wgJobRunRate = 1;
 
+
+// https://www.mediawiki.org/wiki/Extension:WikibaseCirrusSearch
+wfLoadExtension( 'WikibaseCirrusSearch' );
+
+\$wgCirrusSearchServers = [ "127.0.0.1" ];
+\$wgSearchType = 'CirrusSearch';
+\$wgCirrusSearchExtraIndexSettings['index.mapping.total_fields.limit'] = 5000;
+\$wgWBCSUseCirrus = true;
+
+wfLoadExtension( 'CirrusSearch' );
+wfLoadExtension( 'Elastica' );
+
 EOF
 
               php ${wikibase}/maintenance/run.php update.php \
                 --quick \
                 --conf "$DATADIR"/LocalSettings.php
 
-              php ${wikibase}/extensions/CirrusSearch/maintenance/UpdateSearchIndexConfig.php
-              php ${wikibase}/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipParse
-              php ${wikibase}/extensions/CirrusSearch/maintenance/ForceSearchIndex.php --skipLinks --indexOnSkip
+              php ${wikibase}/maintenance/run.php CirrusSearch:UpdateSearchIndexConfig.php \
+                --conf "$DATADIR"/LocalSettings.php
+              php ${wikibase}/maintenance/run.php CirrusSearch:ForceSearchIndex.php --skipParse \
+                --conf "$DATADIR"/LocalSettings.php
+              php ${wikibase}/maintenance/run.php CirrusSearch:ForceSearchIndex.php --skipLinks --indexOnSkip \
+                --conf "$DATADIR"/LocalSettings.php
 
               MW_CONFIG_FILE="''${DATADIR}/LocalSettings.php" \
                 php -S 127.0.0.1:8081 -t ${wikibase}
             '';
           };
           depends_on."mysql".condition = "process_healthy";
+          depends_on."elasticsearch".condition = "process_healthy";
+
+          readiness_probe = {
+            exec.command = "${pkgs.curl}/bin/curl -f -k http://127.0.0.1:8081";
+            initial_delay_seconds = 45;
+            period_seconds = 10;
+            timeout_seconds = 2;
+            success_threshold = 1;
+            failure_threshold = 5;
+          };
         };
 
         settings.processes.wdqs = {
@@ -92,6 +118,15 @@ EOF
               EXTRA_JVM_OPTS=-Dcom.bigdata.journal.AbstractJournal.file="''${DATADIR}/data.jnl" \
                 LOG_DIR="''${DATADIR}/log" ${wdqs}/runBlazegraph.sh
             '';
+          };
+
+          readiness_probe = {
+            exec.command = "${pkgs.curl}/bin/curl -f -k http://127.0.0.1:9999/bigdata/namespace/wdq/sparql";
+            initial_delay_seconds = 15;
+            period_seconds = 10;
+            timeout_seconds = 2;
+            success_threshold = 1;
+            failure_threshold = 5;
           };
         };
 
@@ -106,6 +141,17 @@ EOF
                 --entityNamespaces "120,122"
             '';
           };
+
+          depends_on."php".condition = "process_healthy";
+          depends_on."wdqs".condition = "process_healthy";
+        };
+
+        services.elasticsearch."elasticsearch" = {
+          enable = true;
+          package = elasticsearch;
+          plugins = [
+            # pkgs.elasticsearchPlugins.analysis-icu
+          ];
         };
       };
 
@@ -118,6 +164,7 @@ EOF
       packages = {
         inherit wikibase;
         inherit wdqs;
+        inherit elasticsearch;
       };
     };
   };
