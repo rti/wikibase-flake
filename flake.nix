@@ -12,6 +12,8 @@
     perSystem = { self', pkgs, config, lib, ... }:
     let
       wikibase = (import ./packages/wikibase) { inherit pkgs; };
+      wdqs = (import ./packages/wdqs) { inherit pkgs; };
+
     in
     {
       process-compose."default" = { config, ... }: {
@@ -78,6 +80,7 @@ EOF
       };
       packages = {
         inherit wikibase;
+        inherit wdqs;
       };
     };
   };
