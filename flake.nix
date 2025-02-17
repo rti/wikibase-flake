@@ -18,6 +18,7 @@
     {
       process-compose."default" = { config, ... }: {
         imports = [ inputs.services-flake.processComposeModules.default ];
+
         services.mysql."mysql" = {
           enable = true;
           # settings.mysqld.port = 3307;
@@ -32,6 +33,7 @@
             };
           }];
         };
+
         settings.processes.php = {
           command = pkgs.writeShellApplication {
             name = "php";
@@ -39,7 +41,8 @@
             text = ''
               set -x
 
-              WORKDIR=$(mktemp -d)
+              DATADIR="''${PWD}/data/php"
+              mkdir -p "$DATADIR"
 
               php ${wikibase}/maintenance/install.php \
                 --server "http://localhost:8081" \
@@ -47,12 +50,12 @@
                 --dbserver 127.0.0.1 \
                 --dbuser wiki \
                 --dbpass wiki \
-                --confpath "$WORKDIR" \
+                --confpath "$DATADIR" \
                 --scriptpath "/w" \
                 --extensions "AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor" \
                 my_wiki admin
 
-                cat <<EOF >> "$WORKDIR"/LocalSettings.php
+                cat <<EOF >> "$DATADIR"/LocalSettings.php
 # Wikibase Repository
 wfLoadExtension( 'WikibaseRepository', "\$IP/extensions/Wikibase/extension-repo.json" );
 require_once "\$IP/extensions/Wikibase/repo/ExampleSettings.php";
@@ -64,10 +67,25 @@ EOF
 
               php ${wikibase}/maintenance/run.php update.php \
                 --quick \
-                --conf "$WORKDIR"/LocalSettings.php
+                --conf "$DATADIR"/LocalSettings.php
 
-              MW_CONFIG_FILE="''${WORKDIR}/LocalSettings.php" \
+              MW_CONFIG_FILE="''${DATADIR}/LocalSettings.php" \
                 php -S 127.0.0.1:8081 -t ${wikibase}
+            '';
+          };
+          depends_on."mysql".condition = "process_healthy";
+        };
+        settings.processes.wdqs = {
+          command = pkgs.writeShellApplication {
+            name = "wdqs";
+            runtimeInputs = [];
+            text = ''
+              set -x
+
+              DATADIR="''${PWD}/data/php"
+              mkdir -p "$DATADIR"/log
+
+              LOG_DIR="''${DATADIR}/log" ${wdqs}/runBlazegraph.sh
             '';
           };
           depends_on."mysql".condition = "process_healthy";
