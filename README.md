@@ -10,7 +10,7 @@ For a production-ready Wikibase distribution, check out [Wikibase Suite](https:/
 ## Run the stack
 Install nix and
 ```sh
-nix run https://github.com/rti/wikibase-flake.git
+nix run github:rti/wikibase-flake
 ```
 
 ![](./process-compose.png)
